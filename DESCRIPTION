@@ -1,0 +1,29 @@
+Package: SDMPlay
+Type: Package
+Title: Species Distribution Modelling Playground
+Version: 1.0
+Date:2016-08-03
+Authors@R: c(
+    person("Guillaumot", "Charlene", email ="charleneguillaumot21@gmail.com",role=c("aut","cre")),
+    person("Martin","Alexis",email = "alexis.martin@mnhn.fr",role = "aut"),
+    person("Saucede","Thomas",email = "thomas.saucede@u-bourgogne.fr",role = "aut"),
+    person("Eleaume","Marc",email = "marc.eleaume@mnhn.fr",role = "aut"))
+Description: SDMPlay is a package developed to provide simple functions to build species distribution models and ready to use sets of marine biological and environmental data. The functions allow to compute models with two popular machine learning approaches, BRT (Boosted Regression Trees) and MaxEnt (Maximum Entropy). They include the possibility of managing the main parameters for the construction of the models. Classic tools to evaluate model performance are provided (Area Under the Curve, omission rate and confusion matrix, map standard deviation) and are completed with tools to perform null models. The biological dataset includes original occurrences of two species of the class Echinoidea (sea urchins) present on the Kerguelen Plateau and that show contrasted ecological niches. The environmental dataset includes the corresponding statistics for 15 abiotic and biotic descriptors summarized for the Kerguelen Plateau and for different periods in a raster format. The package can be used for practicals to teach and learn the basics of species distribution modelling. Maps of potential distribution can be produced based on the example data included in the package, which brings prior observations of the influence of spatial and temporal heterogeneities on modelling performances. The user can also provide his own datasets to use the modelling functions.
+License: GPL-3
+LazyData: TRUE
+Depends: R (>= 3.1.0)
+Imports:
+    sp,
+    raster,
+    dismo,
+    SDMTools,
+    gbm,
+    stats,
+    base,
+    graphics
+Suggests:
+    maptools,
+    testthat,
+    grDevices,
+    rJava (>= 0.5-0)
+RoxygenNote: 5.0.1
