@@ -9,8 +9,9 @@
 #'Null models are a compilation of \emph{nb.rep} models. Species distribution models can be compared to density distribution of the null model outputs in order to estimate signification rates.
 #'
 #'@usage
-#'null.model(predictors, xy = NULL, type = c(1, 2), algorithm = c('brt', 'maxent'),
-#'          nb,unique.data = T, same = T, background.nb = nb, nb.rep = 10)
+#'null.model(predictors, xy = NULL, type = c(1, 2), algorithm = c("brt", "maxent"), nb,
+#'          unique.data = T, same = T, background.nb = nb, nb.rep = 10, tc = 2,
+#'          lr = 0.001, bf = 0.75, n.trees = 50, step.size = n.trees)
 #'
 #'@param predictors Rasterstack object that contains the predictors that will be used for species distribution models
 #'@param type Null model type to perform. type=1 to perform a null model based on visited areas, type=2 to predict random model
@@ -20,7 +21,18 @@
 #'@param same If TRUE (default), the number of background data sampled in the area will be 'nb'
 #'@param unique.data If TRUE (default), pixel duplicates contained in 'xy' are removed
 #'@param background.nb Number of background data to sample. If this argument is filled, 'same' is set FALSE.
-#'@param nb.rep Null models number of replicates
+#'@param nb.rep Null models number of replicates. See \link{compute.brt}
+
+#'@param tc BRT parameter. Integer. Tree complexity. Sets the complexity of individual trees. See \link{compute.brt}
+#'
+#'@param lr BRT parameter.Learning rate. Sets the weight applied to individual trees. See \link{compute.brt}
+#'
+#'@param bf BRT parameter.Bag fraction. Sets the proportion of observations used in selecting variables. See \link{compute.brt}
+#'
+#'@param n.trees BRT parameter.Number of initial trees to fit. Set at 50 by default. See \link{compute.brt}
+#'
+#'@param step.size BRT parameter.Number of trees to add at each cycle. See \link{compute.brt}
+#'
 
 #'
 #'@details
@@ -40,55 +52,49 @@
 #'\item \emph{$pred.mean}   Raster layer. Null model prediction. Mean of the $pred.stack RasterStack
 #'\item \emph{$correlation} Spearman rank test value between the different maps produced }
 #'
+#'@note
+#'If you want to build a MaxEnt model, \link{compute.maxent} uses the functionalities of the \link[dismo]{maxent} function. This function uses MaxEnt species distribution software, which is a java program that could be downloaded at \url{http://www.cs.princeton.edu/~schapire/maxent/}. In order to run compute.maxent, put the 'maxent.jar' file downloaded at this adress in the 'java' folder of the dismo package (path obtained with the system.file('java', package='dismo') command). MaxEnt 3.3.3b version or higher is required.
 #'
 #'@seealso
 #'\link[dismo]{nicheOverlap}: compare prediction maps
 #'\link[rJava]{.jpackage}: initialize dismo for Java
 #'
 #'@examples
+#'\dontrun{
 #'library(dismo)
 #'#Download the environmental predictors restricted on geographical extent and depth (-1500m)
 #'envi <-raster::stack(system.file('extdata', 'pred.grd',package='SDMPlay'))
 #'
-#'# Realize a null model type #1 with MaxEnt
-#'#-----------------------------------------
-#'# Visited sites: for the example, we will take random points in the area
-#'layer1 <- raster::subset(envi, 1)
-#'# extract the coordinates of 500 random pixels in the area
-#'visit <- dismo::randomPoints(layer1,n=500)
-#'
-#'# Null model with 5 replications
-#'modelN <- SDMPlay:::null.model(xy=visit,predictors=envi,type=1,algorithm='maxent',
-#'                     nb=300,unique.data=TRUE, same=TRUE, nb.rep=5)
+#' # Realize a null model type #2 with BRT
+#' #--------------------------------------
+#' # NB: the following arguments chosen for the example are not relevant,
+#' # in the scope to minimize running time
+#' modelN2 <- SDMPlay:::null.model(xy=NULL,predictors=envi,type=2,algorithm='brt',
+#'                      nb=300,unique.data=TRUE, same=TRUE, nb.rep=2,lr=0.005)
 #'
 #'# Look at the inputs used to implement the model
-#'modelN$input
+#'modelN2$input
 #'
 #'# Get the evaluation of the models produced
-#'modelN$eval
+#'modelN2$eval
 #'
 #'# Get the evaluation of the mean of all these produced models (i.e. evaluation
 #'# of the null model )
-#'modelN$eval.null
+#'modelN2$eval.null
 #'
 #'# Get the values of Spearman correlations between the all the prediction maps produced
-#'modelN$correlation
+#'modelN2$correlation
 #'
 #'# Plot the mean null model map with nice colors
 #'library(grDevices)
 #'palet.col <- colorRampPalette(c('deepskyblue','green','yellow', 'red'))(80)
-#'raster::plot(modelN$pred.mean, col=palet.col)
-#'
-
-#' # Realize a null model type #2 with BRT
-#' #--------------------------------------
-#' modelN2 <- SDMPlay:::null.model(xy=NULL,predictors=envi,type=2,algorithm='brt',
-#'                      nb=300,unique.data=TRUE, same=TRUE, nb.rep=3)
-#'
+#'raster::plot(modelN2$pred.mean, col=palet.col)
+#'}
 
 
-null.model <- function(predictors, xy = NULL, type = c(1, 2), algorithm = c("brt", "maxent"), nb,
-    unique.data = T, same = T, background.nb = nb, nb.rep = 10) {
+
+null.model <- function(predictors, xy = NULL, type = c(1, 2), algorithm = c("brt", "maxent"), nb,unique.data = T, same = T, background.nb = nb, nb.rep = 10, tc = 2, lr = 0.001, bf = 0.75,
+                       n.trees = 50, step.size = n.trees) {
 
     # remove duplicate data in the 'xy' frame
     if (unique.data == T) {
@@ -192,7 +198,8 @@ null.model <- function(predictors, xy = NULL, type = c(1, 2), algorithm = c("brt
                       same = same, background.nb = background.nb)
 
                     # Running the model ==========================
-                    model <- compute.brt(x = SDMtab.object, proj.predictors = predictors)
+                    model <- compute.brt(x = SDMtab.object, proj.predictors = predictors,
+                                         tc=tc,lr=lr,bf=bf,n.trees=n.trees,step.size=step.size)
 
                     # evaluate the model and add the data in a dataframe
                     eval <- base::rbind(eval, SDMeval(model))
@@ -227,7 +234,8 @@ null.model <- function(predictors, xy = NULL, type = c(1, 2), algorithm = c("brt
                       same = same, background.nb = background.nb)
 
                     # Running the model ==========================
-                    model <- compute.brt(x = SDMtab.object, proj.predictors = predictors)
+                    model <- compute.brt(x = SDMtab.object, proj.predictors = predictors,
+                                         tc=tc,lr=lr,bf=bf,n.trees=n.trees,step.size=step.size)
 
                     # evaluate the model and add the data in a dataframe
                     eval <- base::rbind(eval, SDMeval(model))

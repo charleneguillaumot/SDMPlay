@@ -25,11 +25,10 @@
 #'@return RasterLayer object
 #'
 #' @examples
-#' data('predictors1965_1974')
-#' predictors1965_1974 # information about the initial RasterStack
-#' raster::plot(predictors1965_1974) # plot rasters contained in the initial RasterStack
+#' data('predictors2005_2012')
+#' envi <- predictors2005_2012
 #'
-#' r <- SDMPlay:::delim.area(predictors = predictors1965_1974,
+#' r <- SDMPlay:::delim.area(predictors = envi,
 #' longmin = 70,longmax = 75, latmin = -50,latmax = -40,interval = c(0,-1000))
 #' r
 #'
