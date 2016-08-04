@@ -58,80 +58,84 @@ legend("bottomleft", legend=c("Brisaster antarcticus 1974-1975","Brisaster antar
 
 # Script for the environmental data
 #===================================
-library(ncdf4)
-library(maptools)
-library(raster)
-library(sp)
-library(dismo)
-library(rgdal)
-library(dismo)
-library(gdata)# pour la fonction resample
-library(rJava)
+# library(ncdf4)
+# library(maptools)
+# library(raster)
+# library(sp)
+# library(dismo)
+# library(rgdal)
+# library(dismo)
+# library(gdata)# pour la fonction resample
+# library(rJava)
 
 #chargement des rasters
 
-profKER<-raster("data/profKER.nc")
+profKER<-raster("profKER.nc")
 
-temp_surf<-raster("data/temp_surf.nc")
-temp_5564_surf<-raster("data/temp_5564_surf.nc")
-temp_6574_surf<-raster("data/temp_6574_surf.nc")
-temp_7594_surf<-raster("data/temp_7594_surf.nc")
-temp_0512_surf<-raster("data/temp_0512_surf.nc")
+temp_surf<-raster("temp_surf.nc")
+temp_5564_surf<-raster("temp_5564_surf.nc")
+temp_6574_surf<-raster("temp_6574_surf.nc")
+temp_7594_surf<-raster("temp_7594_surf.nc")
+temp_0512_surf<-raster("temp_0512_surf.nc")
 
-ampli_temp_all_surf<-raster("data/ampli_temp_all_surf.nc")
-ampli_temp_5564_surf<-raster("data/ampli_temp_5564_surf.nc")
-ampli_temp_6574_surf<-raster("data/ampli_temp_6574_surf.nc")
-ampli_temp_7594_surf<-raster("data/ampli_temp_7594_surf.nc")
-ampli_temp_0512_surf<-raster("data/ampli_temp_0512_surf.nc")
+ampli_temp_all_surf<-raster("ampli_temp_all_surf.nc")
+ampli_temp_5564_surf<-raster("ampli_temp_5564_surf.nc")
+ampli_temp_6574_surf<-raster("ampli_temp_6574_surf.nc")
+ampli_temp_7594_surf<-raster("ampli_temp_7594_surf.nc")
+ampli_temp_0512_surf<-raster("ampli_temp_0512_surf.nc")
 
-temp_fond_all<-raster("data/temp_fond_all.nc")
-temp_fond_5564<-raster("data/temp_fond_5564.nc")
-temp_fond_6574<-raster("data/temp_fond_6574.nc")
-temp_fond_7594<-raster("data/temp_fond_7594.nc")
-temp_fond_0512<-raster("data/temp_fond_0512.nc")
+temp_fond_all<-raster("temp_fond_all.nc")
+temp_fond_5564<-raster("temp_fond_5564.nc")
+temp_fond_6574<-raster("temp_fond_6574.nc")
+temp_fond_7594<-raster("temp_fond_7594.nc")
+temp_fond_0512<-raster("temp_fond_0512.nc")
 
-ampli_temp_fond_all<-raster("data/ampli_temp_fond_all.nc")
-ampli_temp_fond_5564<-raster("data/ampli_temp_fond_5564.nc")
-ampli_temp_fond_6574<-raster("data/ampli_temp_fond_6574.nc")
-ampli_temp_fond_7594<-raster("data/ampli_temp_fond_7594.nc")
-ampli_temp_fond_0512<-raster("data/ampli_temp_fond_0512.nc")
+ampli_temp_fond_all<-raster("ampli_temp_fond_all.nc")
+ampli_temp_fond_5564<-raster("ampli_temp_fond_5564.nc")
+ampli_temp_fond_6574<-raster("ampli_temp_fond_6574.nc")
+ampli_temp_fond_7594<-raster("ampli_temp_fond_7594.nc")
+ampli_temp_fond_0512<-raster("ampli_temp_fond_0512.nc")
 
-sali_surf<-raster("data/sali_surf.nc")
-sali_surf_5564<-raster("data/sali_5564_surf.nc")
-sali_surf_6574<-raster("data/sali_6574_surf.nc")
-sali_surf_7594<-raster("data/sali_7594_surf.nc")
-sali_surf_0512<-raster("data/sali_0512_surf.nc")
+sali_surf<-raster("sali_surf.nc")
+sali_surf_5564<-raster("sali_5564_surf.nc")
+sali_surf_6574<-raster("sali_6574_surf.nc")
+sali_surf_7594<-raster("sali_7594_surf.nc")
+sali_surf_0512<-raster("sali_0512_surf.nc")
 
-ampli_sali_surf<-raster("data/ampli_sali_surf.nc")
-ampli_sali_surf_5564<-raster("data/ampli_sali_surf_5564.nc")
-ampli_sali_surf_6574<-raster("data/ampli_sali_surf_6574.nc")
-ampli_sali_surf_7594<-raster("data/ampli_sali_surf_7594.nc")
-ampli_sali_surf_0512<-raster("data/ampli_sali_surf_0512.nc")
+ampli_sali_surf<-raster("ampli_sali_surf.nc")
+ampli_sali_surf_5564<-raster("ampli_sali_surf_5564.nc")
+ampli_sali_surf_6574<-raster("ampli_sali_surf_6574.nc")
+ampli_sali_surf_7594<-raster("ampli_sali_surf_7594.nc")
+ampli_sali_surf_0512<-raster("ampli_sali_surf_0512.nc")
 
-sali_fond_all<-raster("data/sali_fond_all.nc")
-sali_fond_5564<-raster("data/sali_fond_5564.nc")
-sali_fond_6574<-raster("data/sali_fond_6574.nc")
-sali_fond_7594<-raster("data/sali_fond_7594.nc")
-sali_fond_0512<-raster("data/sali_fond_0512.nc")
+sali_fond_all<-raster("sali_fond_all.nc")
+sali_fond_5564<-raster("sali_fond_5564.nc")
+sali_fond_6574<-raster("sali_fond_6574.nc")
+sali_fond_7594<-raster("sali_fond_7594.nc")
+sali_fond_0512<-raster("sali_fond_0512.nc")
 
-ampli_sali_fond_all<-raster("data/ampli_sali_fond_all.nc")
-ampli_sali_fond_5564<-raster("data/ampli_sali_fond_5564.nc")
-ampli_sali_fond_6574<-raster("data/ampli_sali_fond_6574.nc")
-ampli_sali_fond_7594<-raster("data/ampli_sali_fond_7594.nc")
-ampli_sali_fond_0512<-raster("data/ampli_sali_fond_0512.nc")
+ampli_sali_fond_all<-raster("ampli_sali_fond_all.nc")
+ampli_sali_fond_5564<-raster("ampli_sali_fond_5564.nc")
+ampli_sali_fond_6574<-raster("ampli_sali_fond_6574.nc")
+ampli_sali_fond_7594<-raster("ampli_sali_fond_7594.nc")
+ampli_sali_fond_0512<-raster("ampli_sali_fond_0512.nc")
 
-chloro_ete<-raster("data/chloro_ete.nc")
-geomorpho<-raster("data/geomorpho.nc")
-sediments<-raster("data/sediments.nc")
-pente<-raster("data/pente.nc")
-oxy_fond<-raster("data/oxy_fond.nc")
-roughness<-raster("data/roughness.nc")
+chloro_ete<-raster("chloro_ete.nc")
+geomorpho<-raster("geomorpho.nc")
+sediments<-raster("sediments.nc")
+pente<-raster("slope.asc")
+pente2 <-raster("pente.nc")
+values(pente)<-values(pente2)
+oxy_fond<-raster("oxy_fond.nc")
+roughness<-raster("roughness.nc")
 
 origin(profKER)<-0
 origin(pente)<-0
 origin(geomorpho)<-0
 origin(chloro_ete)<-0
 origin(roughness)<-0
+
+crs(pente)<-"+proj=longlat +datum=WGS84 +no_defs +ellps=WGS84 +towgs84=0,0,0"
 
 # # minimum extent
 mini<-profKER+temp_surf+temp_5564_surf+temp_6574_surf+temp_7594_surf+temp_0512_surf+ampli_temp_all_surf+ampli_temp_5564_surf+ampli_temp_6574_surf+ampli_temp_7594_surf+ampli_temp_0512_surf+temp_fond_all+temp_fond_5564+temp_fond_6574+temp_fond_7594+temp_fond_0512+ampli_temp_fond_all+ampli_temp_fond_5564+ampli_temp_fond_6574+ampli_temp_fond_7594+ampli_temp_fond_0512+sali_surf+sali_surf_5564+sali_surf_6574+sali_surf_7594+sali_surf_0512+ampli_sali_surf+ampli_sali_surf_5564+ampli_sali_surf_6574+ampli_sali_surf_7594+ampli_sali_surf_0512+sali_fond_all+sali_fond_5564+sali_fond_6574+sali_fond_7594+sali_fond_0512+ampli_sali_fond_all+ampli_sali_fond_5564+ampli_sali_fond_6574+ampli_sali_fond_7594+ampli_sali_fond_0512+chloro_ete+geomorpho+sediments+pente+oxy_fond+roughness
@@ -204,31 +208,31 @@ ens<-seq(1,47,1)
 ens.70<-ens[-c(1,4,9,14,19,24,29,34,39,42:47)]#c(): liste des couches à garder, du coup, ens.70: liste à supprimer
 predictors1965_1974<-dropLayer(predictors,ens.70)
 names(predictors1965_1974)<-c("depth","seasurface_temperature_mean_1965_1974","seasurface_temperature_amplitude_1965_1974","seafloor_temperature_mean_1965_1974","seafloor_temperature_amplitude_1965_1974","seasurface_salinity_mean_1965_1974","seasurface_salinity_amplitude_1965_1974","seafloor_salinity_mean_1965_1974","seafloor_salinity_amplitude_1965_1974","chlorophyla_summer_mean_2002_2009","geomorphology","sediments","slope","seafloor_oxygen_mean_1955_2012","roughness")
-save(predictors1965_1974,file="predictors1965_1974.grd",compress="xz",compression_level = 9)
+#save(predictors1965_1974,file="predictors1965_1974.grd",compress="xz",compression_level = 9)
 
-devtools::use_data(predictors1965_1974,compress="xz")
+devtools::use_data(predictors1965_1974)
 
 #période 2005_2012
 ens.201013<-ens[-c(1,6,11,16,21,26,31,36,41,42:47)]#c(): liste des couches à garder, du coup, ens.70: liste à supprimer
 predictors2005_2012<-dropLayer(predictors,ens.201013)
 names(predictors2005_2012)<-c("depth","seasurface_temperature_mean_2005_2012","seasurface_temperature_amplitude_2005_2012","seafloor_temperature_mean_2005_2012","seafloor_temperature_amplitude_2005_2012","seasurface_salinity_mean_2005_2012","seasurface_salinity_amplitude_2005_2012","seafloor_salinity_mean_2005_2012","seafloor_salinity_amplitude_2005_2012","chlorophyla_summer_mean_2005_2012","geomorphology","sediments","slope","seafloor_oxygen_mean_2005_2012","roughness")
-devtools::use_data(predictors2005_2012,compress="xz" )
+devtools::use_data(predictors2005_2012)
 
 
 ####################### FUTURE ENVIRONMENTAL DATA ##### AIB 2200 IPCC SCENARIO #################################
 # Stack compilation for 2200 A1B IPCC scenario
 
-profKER<-raster("data/profKER.nc")
-sali_surf_2200<-raster("data/sali_surf_2200.nc")
-temp_surf_2200<-raster("data/temp_surf_2200.nc")
-ampli_temp_surf_2200<-raster("data/ampli_temp_surf_2200.nc")
+profKER<-raster("profKER.nc")
+sali_surf_2200<-raster("sali_surf_2200.nc")
+temp_surf_2200<-raster("temp_surf_2200.nc")
+ampli_temp_surf_2200<-raster("ampli_temp_surf_2200.nc")
 
-chloro_ete<-raster("data/chloro_ete.nc")
-geomorpho<-raster("data/geomorpho.nc")
-sediments<-raster("data/sediments.nc")
-pente<-raster("data/pente.nc")
-oxy_fond<-raster("data/oxy_fond.nc") # à lisser
-roughness<-raster("data/roughness.nc")
+chloro_ete<-raster("chloro_ete.nc")
+geomorpho<-raster("geomorpho.nc")
+sediments<-raster("sediments.nc")
+pente<-raster("slope.asc")
+oxy_fond<-raster("oxy_fond.nc") # à lisser
+roughness<-raster("roughness.nc")
 
 origin(profKER)<-0
 origin(pente)<-0
@@ -255,7 +259,7 @@ roughness<-crop(roughness,extent(mini))
 predictors2200AIB<-stack(c(profKER,sali_surf_2200,temp_surf_2200,ampli_temp_surf_2200,chloro_ete,geomorpho,sediments,pente,oxy_fond,roughness))
 names(predictors2200AIB)<-c("depth","seasurface_salinity_mean_2200_A1B","seasurface_temperature_mean_2200_A1B","seasurface_temperature_amplitude_2200_A1B","chlorophyla_summer_mean_2002_2009","geomorphology","sediments","slope","seafloor_oxygen_mean_1955_2012","roughness")
 
-devtools::use_data(predictors2200AIB,compress="xz")
+devtools::use_data(predictors2200AIB)
 
 
 
