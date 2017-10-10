@@ -7,6 +7,6 @@ The biological dataset includes original occurrences of two species of the class
 The package can be used for practicals to teach and learn the basics of species distribution modelling. Maps of potential distribution can be produced based on the example data included in the package, which brings prior observations of the influence of spatial and temporal heterogeneities on modelling performances. The user can also provide his own datasets to use the modelling functions. 
 
 References=
-Guillaumot C, A Martin, S Fabri-Ruiz, M Eleaume & T Saucede. Echinoids of the Kerguelen Plateau: Occurrence data and environmental setting for past, present, and future species distribution modelling.Zookeys, Manuscript submitted for publication. 
+Guillaumot, C., Martin, A., Fabri-Ruiz, S., Eléaume, M., & Saucède, T. (2016). Echinoids of the Kerguelen Plateau–occurrence data and environmental setting for past, present, and future species distribution modelling. ZooKeys, (630), 1.
 
 Guillaumot, C., Martin , A., Fabri-Ruiz, S., Eleaume, M. and Saucede, T. (2016) Environmental parameters (1955-2012) for echinoids distribution modelling on the Kerguelen Plateau. Australian Antarctic Data Centre - doi:10.4225/15/578ED5A08050F
