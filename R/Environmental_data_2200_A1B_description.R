@@ -19,7 +19,7 @@
 #'
 #'   \item \strong{seasurface_temperature_amplitude_2200_A1B} \cr Amplitude between mean summer and mean winter sea surface temperature. Absolute value interpolated over 2187-2196, scenario A1B \cr Unit=Celsius degrees. Reference= BIO ORACLE (Tyberghein et al. 2012) \cr \url{http://www.oracle.ugent.be/}
 #'
-#'   \item \strong{chlorophyla_summer_mean_2002_2009} \cr Surface chlorophyll a concentration. Summer mean over 2002-2009 \cr Unit=mg/m3. Reference=MODIS AQUA (NASA) 2010 \cr \url{http://gdata1.sci.gsfc.nasa.gov/daac-bin/G3/gui.cgi?instance_id=ocean_8day}
+#'   \item \strong{chlorophyla_summer_mean_2002_2009} \cr Surface chlorophyll a concentration. Summer mean over 2002-2009 \cr Unit=mg/m3. Reference=MODIS AQUA (NASA) 2010 \cr \url{http://oceandata.sci.gsfc.nasa.gov/MODIS-Aqua/Mapped}
 #'
 #'   \item \strong{geomorphology} \cr Geomorphologic features \cr Unit= 27 categories. Reference= ATLAS ETOPO2 2014 (Douglass et al. 2014)
 #'

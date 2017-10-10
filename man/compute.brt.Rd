@@ -40,6 +40,7 @@ The function realizes a BRT model according to the \link[dismo]{gbm.step} functi
 See Barbet Massin et al. (2012) for information about background selection to implement BRT models
 }
 \examples{
+\dontrun{
 #Download the presence data
 data('ctenocidaris.nutrix')
 occ <- ctenocidaris.nutrix
@@ -79,10 +80,10 @@ points(occ, col='black',pch=16)
 
 
 # SECOND EXAMPLE: projecting the model on another period
-# remark: to predict on a different RasterStack, the rasterlayer names must be the same
-# and the number of layers must be the same as well. Changes have been done in this example
-# by attributing similar names to pred and pred2000 stacks and adding extra blanck layers
-# (NA layers) to the stack with less layers
+# Remark: to predict on a different RasterStack, the rasterlayer names of the two
+# stacks must be the same and the number of layers must be the same as well.
+# Changes have been done in this example by attributing similar names to pred
+# and pred2000 stacks and adding extra blank layers (NA layers) to pred2000 stack.
 envi2000 <- raster::stack(system.file('extdata', 'pred2000.grd',package='SDMPlay'))
 
 #Run the model
@@ -91,7 +92,7 @@ model2 <- SDMPlay:::compute.brt (x=SDMdata, proj.predictors=envi2000,lr=0.0005)
 #Plot the new predicting map
 raster::plot(model2$raster.prediction, col=palet.col)
 #add data
-points(occ, col='black',pch=16)
+points(occ, col='black',pch=16)}
 }
 \references{
 Barbet Massin M, F Jiguet, C Albert & W Thuiller (2012) Selecting pseudo absences for species distribution models: how, where and how many? \emph{Methods in Ecology and Evolution}, 3(2): 327-338.
@@ -101,4 +102,3 @@ Elith J, J Leathwick & T Hastie (2008) A working guide to boosted regression tre
 \seealso{
 \link[dismo]{gbm.step}
 }
-

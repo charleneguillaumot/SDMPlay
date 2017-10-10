@@ -26,4 +26,3 @@ SDMPlay:::SDMdata.quality(data=SDMdata)
 \seealso{
 \link{SDMeval}
 }
-

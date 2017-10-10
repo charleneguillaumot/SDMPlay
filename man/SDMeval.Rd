@@ -36,11 +36,10 @@ load(system.file('extdata','model.RData',package='SDMPlay'))
 modelBRT <- model
 
 # Evaluate modelling performance
-SDMPlay:::SDMeval(modelBRT)
+#SDMPlay:::SDMeval(modelBRT)
 }
 \references{
 Fielding A, & J Bell (1997) A review of methods for the assessment of prediction errors in conservation presence absence models. \emph{Environmental Conservation}, 24(1): 38-49.
 
 Liu C, M White & G Newell (2013) Selecting thresholds for the prediction of species occurrence with presence only data. \emph{Journal of Biogeography}, 40(4): 778-789.
 }
-

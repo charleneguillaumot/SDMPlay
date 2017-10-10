@@ -26,7 +26,7 @@
 
   \item \strong{seafloor_salinity_amplitude_1965_1974} \cr Amplitude between mean summer and mean winter seafloor salinity over 1965-1974 \cr Unit=PSS. Reference= Guillaumot et al. (2016,submitted), derived from World Ocean Circulation Experiment 2013 sea surface salinity layers \cr \url{https://www.nodc.noaa.gov/OC5/woa13/woa13data.html}
 
-  \item \strong{chlorophyla_summer_mean_2002_2009} \cr Surface chlorophyll a concentration. Summer mean over 2002-2009 \cr Unit=mg/m3.Reference=MODIS AQUA (NASA) 2010 \cr \url{http://gdata1.sci.gsfc.nasa.gov/daac-bin/G3/gui.cgi?instance_id=ocean_8day}
+  \item \strong{chlorophyla_summer_mean_2002_2009} \cr Surface chlorophyll a concentration. Summer mean over 2002-2009 \cr Unit=mg/m3.Reference=MODIS AQUA (NASA) 2010 \cr \url{http://oceandata.sci.gsfc.nasa.gov/MODIS-Aqua/Mapped}
 
   \item \strong{geomorphology} \cr Geomorphologic features \cr Unit= 27 categories. Reference= ATLAS ETOPO2 2014 (Douglass et al. 2014)
 
@@ -59,4 +59,3 @@ McCoy FW (1991) Southern Ocean sediments: circum-Antarctic to 30S. Marine Geolog
 Smith W, Sandwell D (1997) Global seafloor topography from satellite altimetry and ship depth soundings. Science 277(5334): 1957-1962. doi: 10.1126/science.277.5334.1956.
 }
 \keyword{datasets}
-

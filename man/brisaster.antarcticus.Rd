@@ -62,4 +62,3 @@ Doderlein L (1906) Die Echinoiden der Deutschen Tiefsee-Expedition. Deutsche Tie
 Guillaumot C, A Martin, S Fabri-Ruiz, M Eleaume & T Saucede. Echinoids of the Kerguelen Plateau: Occurrence data and environmental setting for past, present, and future species distribution modelling, Zookeys, Manuscript submitted for publication.
 }
 \keyword{datasets}
-

@@ -25,7 +25,7 @@ Compute species distribution models with MaxEnt (Maximum Entropy)
 \details{
 MaxEnt species distribution model minimizes the relative entropy between environmental descriptors and presence data. Further information are provided in the references below.
 
-compute.maxent uses the functionalities of the \link[dismo]{maxent} function. This function uses MaxEnt species distribution software, which is a java program that could be downloaded at \url{http://www.cs.princeton.edu/~schapire/maxent/}. In order to run compute.maxent, put the 'maxent.jar' file downloaded at this adress in the 'java' folder of the dismo package (path obtained with the system.file('java', package='dismo') command). MaxEnt 3.3.3b version or higher is required.
+compute.maxent uses the functionalities of the \link[dismo]{maxent} function. This function uses MaxEnt species distribution software, which is a java program that could be downloaded at \url{https://github.com/charleneguillaumot/SDMPlay}. In order to run compute.maxent, put the 'maxent.jar' file downloaded at this address in the 'java' folder of the dismo package (path obtained with the system.file('java', package='dismo') command).
 }
 \note{
 To implement MaxEnt models, Phillips & Dudik (2008) advice a large number of background data. You can also find further information about background selection in Barbet Massin et al. (2012).
@@ -45,9 +45,10 @@ envi
 x <- system.file(file='extdata/SDMdata1500.csv',package='SDMPlay')
 SDMdata <- read.table(x,header=TRUE, sep=';')
 
-# Reinitialize Java if needed
-# library(rJava)
-# .jpackage("dismo")
+#only run if the maxent.jar file is available, in the right folder
+jar <- paste(system.file(package="dismo"), "/java/maxent.jar", sep='')
+# checking if maxent can be run (normally not part of your script)
+if (file.exists(jar) & require(rJava)) {
 
 # Run the model
 model <- SDMPlay:::compute.maxent(x=SDMdata , proj.predictors=envi)
@@ -63,16 +64,16 @@ points(occ, col='black',pch=16)
 dismo::response(model$response)
 
 # Get the percentage of contribution of each variable to the model
-#graphics::plot(model$response)
+#plot(model$response)
 
 # Get all the information provided by the model on a html document
 model$response
 
 # SECOND EXAMPLE: projecting the model on another period
-# remark: to predict on a different RasterStack, the rasterlayer names must be the same
-# and the number of layers must be the same as well. Changes have been done in this example
-# by attributing similar names to pred and pred2000 stacks and adding extra blanck layers
-# (NA layers) to the stack with less layers
+# Remark: to predict on a different RasterStack, the rasterlayer names of the two
+# stacks must be the same and the number of layers must be the same as well.
+# Changes have been done in this example by attributing similar names to pred
+# and pred2000 stacks and adding extra blank layers (NA layers) to pred2000 stack.
 envi2000 <- raster::stack(system.file('extdata', 'pred2000.grd',package='SDMPlay'))
 
 # run the model
@@ -81,11 +82,9 @@ model2 <- SDMPlay:::compute.maxent(x=SDMdata, proj.predictors=envi2000)
 # plot the new predicting map
 raster::plot(model2$raster.prediction, col=palet.col)
 # add data
-points(occ, col='black',pch=16)
+points(occ, col='black',pch=16)}
 }
 \references{
-\url{http://www.cs.princeton.edu/~schapire/maxent/}
-
 Barbet Massin M, F Jiguet, C Albert & W Thuiller (2012) Selecting pseudo absences for species distribution models: how, where and how many? \emph{Methods in Ecology and Evolution}, 3(2): 327-338.
 
 Elith J, S Phillips, T Hastie, M Dudik, Y Chee &  C Yates (2011) A statistical explanation of MaxEnt for ecologists. \emph{Diversity and Distributions} 17:43-57. \url{http://dx.doi.org/10.1111/j.1472-4642.2010.00725.x}
@@ -100,4 +99,3 @@ Phillips S and M Dudik (2008) Modeling of species distributions with MaxEnt: new
 \link[dismo]{maxent}
 \link[rJava]{.jpackage}: initialize dismo for Java
 }
-

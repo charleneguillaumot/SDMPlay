@@ -82,6 +82,6 @@ SDMtab <- function(xydata, predictors, unique.data = TRUE, same = TRUE, backgrou
 
     inter <- base::rbind(presvals, pseudoabs.vals)
     SDMtab.object <- base::data.frame(base::cbind(id, coord,inter ),check.rows=T)
-    colnames(SDMtab.object) <- c("id", "latitude", "longitude", colnames(presvals))
+    colnames(SDMtab.object) <- c("id", "longitude", "latitude", colnames(presvals))
     return(SDMtab.object)
 }

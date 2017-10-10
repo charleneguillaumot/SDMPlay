@@ -14,7 +14,8 @@
 #'@details
 #'MaxEnt species distribution model minimizes the relative entropy between environmental descriptors and presence data. Further information are provided in the references below.
 #'
-#'compute.maxent uses the functionalities of the \link[dismo]{maxent} function. This function uses MaxEnt species distribution software, which is a java program that could be downloaded at \url{http://www.cs.princeton.edu/~schapire/maxent/}. In order to run compute.maxent, put the 'maxent.jar' file downloaded at this adress in the 'java' folder of the dismo package (path obtained with the system.file('java', package='dismo') command). MaxEnt 3.3.3b version or higher is required.
+#'compute.maxent uses the functionalities of the \link[dismo]{maxent} function. This function uses MaxEnt species distribution software, which is a java program that could be downloaded at \url{https://github.com/charleneguillaumot/SDMPlay}. In order to run compute.maxent, put the 'maxent.jar' file downloaded at this address in the 'java' folder of the dismo package (path obtained with the system.file('java', package='dismo') command).
+#'
 #'
 #'@note
 #'To implement MaxEnt models, Phillips & Dudik (2008) advice a large number of background data. You can also find further information about background selection in Barbet Massin et al. (2012).
@@ -29,7 +30,6 @@
 #'
 #'
 #'@references
-#'\url{http://www.cs.princeton.edu/~schapire/maxent/}
 #'
 #'Barbet Massin M, F Jiguet, C Albert & W Thuiller (2012) Selecting pseudo absences for species distribution models: how, where and how many? \emph{Methods in Ecology and Evolution}, 3(2): 327-338.
 #'
@@ -105,7 +105,7 @@ compute.maxent <- function(x, proj.predictors) {
 
   jar <- paste(system.file(package="dismo"), "/java/maxent.jar", sep='')
   if (!file.exists(jar)) {
-    stop('file missing:\n', jar, '.\nPlease download it here: http://www.cs.princeton.edu/~schapire/maxent/')
+    stop('file missing:\n', jar, '.\nPlease download it here: https://github.com/charleneguillaumot/SDMPlay')
   }
 
     if (!requireNamespace("dismo")) {

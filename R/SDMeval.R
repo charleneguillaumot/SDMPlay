@@ -37,7 +37,7 @@
 #'modelBRT <- model
 #'
 #'# Evaluate modelling performance
-#'SDMPlay:::SDMeval(modelBRT)
+#'#SDMPlay:::SDMeval(modelBRT)
 
 
 

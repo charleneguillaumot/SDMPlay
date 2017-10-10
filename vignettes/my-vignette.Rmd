@@ -1,0 +1,291 @@
+---
+title: "Tutorial for SDMPlay"
+author: "Guillaumot Charlène, Martin Alexis, Eléaume Marc, Saucède Thomas"
+#date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+Species distribution models (SDMs) have been developed for several years to adress conservation issues, assess the direct impact of human activities on ecosystems and predict the potential distribution shifts of invasive species (see Elith et al. 2006, Elith & Leathwick 2009, Pearson 2007 for reviews). SDM relate species occurrences with environmental information and can extrapolate species distribution on their entire occupied space. Applying SDM on limited occurrence datasets can therefore bring complementary information in non-visited areas. However, users must be aware of potential bias and limitations while using such poor and historical datasets (Araujo & Guisan 2006, Robinson 2011, Proosdij et al. 2016) that require corrections (Phillips et al. 2009, Barbet-Massin et al. 2012). 
+
+SDMPlay is a pedagogic package that will allow you to compute SDMs with two popular machine learning approaches, BRT (Boosted Regression Trees) and MaxEnt (Maximum Entropy). It contains occurrences of marine species and environmental descriptors datasets as examples for a first use of SDMs. You can also upload your own dataset.
+Basic approaches for model calibration and execution are provided. Classic tools to evaluate model performance are supplied (Area Under the Curve, omission rate and confusion matrix) and are completed with tools to perform null models (Raes & ter Steege 2007, Proosdij et al. 2016). 
+
+The biological dataset includes original occurrences of two echinoid species (sea urchins) present on the Kerguelen Plateau. The environmental dataset compiles 15 environmental descriptors, displayed in a raster format, on the extent of the Kerguelen Plateau, for different time periods.
+
+**Remarks**
+
+This package focusses on datasets containing presence-only data. Functions must be adapted whether dealing with presence-absence or abundance data. Presence-only methods imply using background data to be selected in the study area (Pearce & Boyce 2006) in order to calibrate the model. Several background sampling methods exist (Phillips et al. 2009), and its choice depends on the presence-only sampling pattern and the scientific questions. This package focusses only on a random sampling of background data. You can refere to other packages such as [biomod2](https://cran.r-project.org/web/packages/biomod2/index.html) if you want to use another sampling strategy (e.g. relative envelope, distance to disk, independent strategy).
+
+## Data overview
+In the package, you can download occurrence data of two echinoid species, *Brisaster antarcticus* and *Ctenocidaris nutrix*, distributed on the Kerguelen Plateau.These two species present contrasting ecological niches, with different feeding preferences and reproductive behaviours (David et al. 2005). The complete dataset of Kerguelen echinoid species is available in Guillaumot et al. (2016).
+
+```{r, eval=T, echo=T}
+library(SDMPlay)
+data("ctenocidaris.nutrix")
+head(ctenocidaris.nutrix)
+```
+
+This package also contains stacks of raster layers, corresponding to environmental descriptors in the region of the Kerguelen Plateau, for three time periods [1965-1974], [2005-2012], and for the climatic scenario A1B (IPCC, 4th report 2007) for 2200. Grid-cells are set at a 0.1° resolution and data were not interpolated (presence of N/A values in the area). Extra metadata and environmental layers are available in Guillaumot et al. (2016).  
+
+**Load the raster stacks**
+```{r, eval=T, echo=F, warning=FALSE, message=FALSE}
+library(raster)
+library(SDMPlay)
+predictors2005_2012 <- raster::stack(system.file("vignette_data","predictors2005_2012_ker.grd",package="SDMPlay"))
+par(mar=c(0,0,0,0))
+```
+```{r, eval=F, echo=T}
+data("predictors1965_1974")
+data("predictors2005_2012")
+data("predictors2200A1B")
+```
+**Plot the layers and explore their properties**
+```{r, eval=F, echo=T, fig.height=5, fig.width=6, fig.align='center'}
+library(raster)
+plot(subset(predictors2005_2012, c(1:4)))
+```
+```{r, eval=T, echo=F, fig.height=5, fig.width=6, fig.align='center'}
+library(raster)
+plot(subset(predictors2005_2012, c(1:4)),cex.axis=0.7, cex.main=0.8,
+     legend.width=1, legend.shrink=0.5)
+```
+As you can notice, particularly for seafloor layers, maps are incomplete and contains an important number of missing values (N/A) because data were not interpolated in space. You can interpolate your data using the functions provided in the [raster](https://cran.r-project.org/web/packages/raster/raster.pdf) package, being aware of the interpretation issues related to this interpolation.
+
+```{r, eval=T, echo=T}
+predictors2005_2012
+names(predictors2005_2012)
+```
+
+## Prepare your model inputs
+
+The first step after checking your data is to adapt your dataset for modelling. Model algorithms require a table containing the environmental values associated with each occurrence data.  
+    
+|     ID*  | Longitude |  Latitude |  depth  | ... |temperature  |
+|:--------:|:---------:|:---------:|--------:|:---:|:-----------:|
+|1         |63.33      |-48.26     |-480     |...  |1.4          |
+|1         |64.13      |-48.57     |-104     |...  |1.2          |
+|...       |...        |...        |...      |...  |...          |
+|0         |67.32      |-47.23     |-1013    |...  |2.5          |
+|0         |67.90      |-55.45     |-98      |...  |4.3          |
+
+*ID corresponds to presence data (ID=1), or background data (ID=0).
+
+This table will be included afterwards within the SDM algorithm (BRT, MaxEnt) and will infere presence probabilities on the area that you will define for extrapolation.
+The package will guide you to build this dataframe and save it as a `SDMtab` object that will be loaded in the following functions of the package. 
+
+###Extract latitude and longitude values 
+```{r, eval=T, echo=T}
+ctenocidaris.nutrix.occ <- ctenocidaris.nutrix[,c(7,8)]
+head(ctenocidaris.nutrix.occ)
+```
+
+### Create your SDMtab dataframe
+```{r, eval=T, echo=F}
+SDMtable_ctenocidaris <- SDMPlay:::SDMtab(xydata=ctenocidaris.nutrix.occ, 
+       predictors=predictors2005_2012,
+       unique.data=FALSE,
+       same=TRUE)
+```
+```{r, eval=F, echo=T}
+SDMtable_ctenocidaris <- SDMtab(xydata=ctenocidaris.nutrix.occ, 
+       predictors=predictors2005_2012,
+       unique.data=FALSE,
+       same=TRUE)
+```
+`unique.data` indicates that the function will look for presence-only data that fall on a same grid-cell pixel. When `unique.data= TRUE`, these presence-only duplicates will be removed from the `xydata` variable. `same` and `background.nb` functions refer to the sampling of background data. `background.nb`, indicates the specific number of background data to sample, while `same` is a shortcut that induces the sampling of a number of background data similar to the number of presence-only data available. You can refer to Barbet-Massin et al. (2012) to choose the most appropriate number of background data to sample for your case study.
+
+We can display the beginning and the end of the first columns of this new `SDMtab` object:
+```{r, eval=T, echo=T}
+head(SDMtable_ctenocidaris[,c(1:5)])
+tail(SDMtable_ctenocidaris[,c(1:5)])
+```
+The dataframe combines environmental values of the 125 presence-only data available (ID=1) and environmental values associated with 125 background data randomly sampled in the area (ID=0).
+
+You can display the sampled data on a map:
+```{r, eval=T, echo=F}
+library(raster)
+library(SDMPlay)
+depth <- raster::subset(raster(system.file("vignette_data","depth_ker.asc",package="SDMPlay")),1)
+```
+
+```{r, eval=T, echo=F}
+par(mar=c(0,0,0,0))
+```
+```{r, eval=T, echo=T}
+# nice colors and map
+bluepalette<-colorRampPalette(c("blue4","blue","dodgerblue", "deepskyblue","lightskyblue"))(800) 
+map <- read.csv(system.file("vignette_data","worldmap-0.01.csv",package="SDMPlay"), header=T)
+```
+```{r, eval=F, echo=T}
+# Isolate depth layer from the environmental stack
+depth <- subset(predictors2005_2012,1)
+```
+```{r, eval=T, echo=T, fig.height=5, fig.width=5, fig.align='center'}
+# Extract background coordinates from SDMtable
+background.occ <- subset(SDMtable_ctenocidaris,SDMtable_ctenocidaris$id==0)[,c(2,3)]
+# plot the result on depth layer
+plot(depth, col=bluepalette, cex=0.8,legend.width=0.5, legend.shrink=0.4,
+     legend.args=list(text='Depth (m)', side=3, font=2, cex=0.8))
+points(map, type="l")
+points(ctenocidaris.nutrix.occ, pch= 20, col="black")
+points(background.occ, pch= 20, col="red")
+legend("bottomleft", pch=20, col=c("black", "red"), legend=c("presence-only data","background data"), cex=0.6)
+
+```
+
+You can assess the quality of your dataset with the `SDMdata.quality` function. This function estimates the percentage of presence-only data that fall on grid-cell pixels containing non-informative values (N/A). It estimates the quality of your dataset when raster layers are not interpolated.
+```{r, eval=F, echo=T}
+SDMdata.quality(SDMtable_ctenocidaris)
+``````{r, eval=T, echo=F}
+SDMPlay:::SDMdata.quality(SDMtable_ctenocidaris)
+```
+
+
+A last calibration step that you can perform before modelling is delineating the modelled area. The `delim.area` function can be used to restrict in geography and depth the environmental descriptors layers. This step can play an important role to enhance modelling performances by limiting the extent of extrapolation. 
+```{r, eval=F, echo=T, fig.height=4, fig.width=4, fig.align='center'}
+par(mar=c(0,0,0,0))
+# restrict to 1500m depth
+predictors2005_2012_1500m <- delim.area(predictors2005_2012, longmin=62, longmax=80,latmin=-55 , latmax=-45, interval=c(0,-1500))
+# plot the new layer 
+plot(subset(predictors2005_2012_1500m,1), col=bluepalette,legend.width=0.5, legend.shrink=0.25,
+     legend.args=list(text='Depth (m)', side=3, font=2, cex=0.8))
+points(map, type="l")
+```
+```{r, eval=T, echo=F, fig.height=5, fig.width=5, fig.align='center'}
+predictors2005_2012_1500m <- SDMPlay:::delim.area(predictors2005_2012, longmin=62, longmax=80,latmin=-55 , latmax=-45, interval=c(0,-1500))
+plot(subset(predictors2005_2012_1500m,1), col=bluepalette,legend.width=0.5, legend.shrink=0.4,
+     legend.args=list(text='Depth (m)', side=3, font=2, cex=0.8))
+points(map, type="l")
+```
+
+You can focus your background sampling on this restrained environment. Run again the `SDMtab` code with these changes. The function will omit the N/A pixels when selecting the random background data. 
+```{r, eval=T, echo=F}
+SDMtable_ctenocidaris_1500 <- SDMPlay:::SDMtab(xydata=ctenocidaris.nutrix.occ, 
+       predictors=predictors2005_2012_1500m,
+       unique.data=FALSE,
+       same=TRUE)
+```
+```{r, eval=F, echo=T}
+SDMtable_ctenocidaris_1500 <- SDMtab(xydata=ctenocidaris.nutrix.occ, 
+       predictors=predictors2005_2012_1500m,
+       unique.data=FALSE,
+       same=TRUE)
+```
+Observe the changes
+```{r, eval=T, echo=F, fig.height=5, fig.width=5, fig.align='center'}
+background.occ_1500 <- subset(SDMtable_ctenocidaris_1500,SDMtable_ctenocidaris_1500$id==0)[,c(2,3)]
+plot(subset(predictors2005_2012_1500m,1), col=bluepalette, cex=0.8, legend.width=0.5, legend.shrink=0.4,
+     legend.args=list(text='Depth (m)', side=3, font=2, cex=0.8))
+points(map, type="l")
+points(ctenocidaris.nutrix.occ, pch= 20, col="black")
+points(background.occ_1500, pch= 20, col="red")
+legend("bottomleft", pch=20, col=c("black", "red"), legend=c("presence-only data","background data"), cex=0.6)
+
+```
+
+## Perform species distribution models
+Once you have built your `SDMtab` dataframe, you can easily perform models using the `compute.maxent` and `compute.brt` functions.
+```{r, eval=F,echo=T}
+compute.brt(x, proj.predictors, tc = 2, lr = 0.001, bf = 0.75,
+           n.trees = 50, step.size = n.trees)
+compute.maxent(x, proj.predictors)
+```
+The fonctions require two main parameters, `x` which correspond to the `SDMtab` object previously created and `proj.predictors`, the `RasterStack` containing the environmental descriptors on which you want to project your model. 
+The other arguments aim at calibrating the model. You can refere to Elith et al. (2008) and Elith et al. (2011) to choose the parameters according to your dataset. BRT arguments are explained in [gbm](https://cran.r-project.org/web/packages/gbm/index.html) package.
+
+
+### Example for BRT 
+**Extrapolate species distribution on the Kerguelen Plateau, for [2005-2012]**
+```{r, message=FALSE, warning=FALSE, echo=T, eval=T, results="hide", fig.height=4, fig.width=4, fig.align='center'}
+Cteno_model_2005_2012 <- SDMPlay:::compute.brt(x=SDMtable_ctenocidaris_1500, proj.predictors=predictors2005_2012_1500m, tc = 2, lr = 0.001, bf = 0.75, n.trees = 500)
+```
+
+While the function is uploading, you can observe that the `gbm` function, called by `SDMPlay`, calculates the regression trees until reaching the best estimation. This can help you refine your model calibration. Run your model while changing the calibration until reaching the best modelling performances.
+
+Afterwards, different outputs can be produced.
+
+#### Mapping species distribution probabilities  
+```{r, fig.height=5, fig.width=5, fig.align='center'}
+# display nice colors
+palettecolor <- colorRampPalette(c("deepskyblue", "darkseagreen","lightgreen","green","yellow","gold","orange", "red","firebrick"))(100)
+# plot the results 
+plot(Cteno_model_2005_2012$raster.prediction,col=palettecolor, main="Projection for [2005-2012]",
+     cex.axis= 0.7, 
+     legend.width=0.5, legend.shrink=0.25,
+     legend.args=list(text='Distribution probability', side=3, font=2, cex=0.8))
+points(map, type="l")
+
+```
+The output of your model cannot extrapolate on the grid-cell pixels from which it does not know environmental values. Choose the option of interpolating your `RasterStack` layers before modelling or when projecting if you want to obtain smoother prediction maps.
+The map gives you the species distribution probabilities contained between 0 and 1.
+
+#### Contribution of the different environmental descriptors 
+```{r, fig.height=5, fig.width=5, fig.align='center'}
+contributions <- Cteno_model_2005_2012$response$contributions
+b <- barplot(contributions[,2], ylab="contribution (%)")
+text(b-0.1, par("usr")[3] - 0.025, srt = 45, adj = 1, labels=contributions[,1],cex=0.5,xpd=T)
+```
+
+### Plot gbm response plots
+Response plots are useful indicators of environmental preferential values for the species. `y` axis contains distribution probabilities predicted by the model and associates these values with environmental data. 
+
+```{r, fig.height=5, fig.width=5, fig.align='center', message=F}
+library(dismo)
+gbm.plot(Cteno_model_2005_2012$response,n.plots=12,cex.axis=0.6,cex.lab=0.7, smooth=TRUE)
+```
+
+### Get the interactions between variables and plot them
+**Display the interaction between your environmental variables and plot them in 3D** 
+```{r, fig.height=4, fig.width=5, fig.align='center', message=FALSE}
+interactions <- gbm.interactions(Cteno_model_2005_2012$response)
+head(interactions$rank.list[,c(5,2,4)])
+gbm.perspec(Cteno_model_2005_2012$response,interactions$rank.list[1,1],interactions$rank.list[1,3], cex.lab=0.6, cex.axis=0.6,par(mar=c(0,0,0,0)))
+
+```
+
+### Project on other time periods
+If you want to project your model on another time period and infere your species distribution for other environmental conditions, you just need to change the `proj.predictors` in `compute.brt`. The fonction will do the relationship between the environmental descriptors used for modelling and projecting. You must ensure that the extent, order and names of your raster layers are similar. 
+
+## Species distribution models with MaxEnt
+The procedure for MaxEnt algorithm is similar to BRT. `compute.maxent` uses the functionalities of the *dismo* `maxent` function. This function calls MaxEnt species distribution software, which is a java program that could be downloaded [here](https://github.com/charleneguillaumot/SDMPlay). In order to run `compute.maxent`, put the `maxent.jar` file downloaded at this address in the *java* folder of the *dismo* package (path obtained with the `system.file('java', package='dismo')` command). 
+For issues with Java installation, consult the [dismo](https://cran.r-project.org/web/packages/dismo/dismo.pdf) and [rJava](https://cran.r-project.org/web/packages/rJava/index.html) packages.
+
+MaxEnt model outputs are similar to BRT, you can compute maps, response plots, environmental descriptors contributions. Refere to the example section of the function for details. 
+
+
+## Go further 
+SDMPlay provides extra fonctions to go further in your modelling work. You can perform null models with `null.model`, evaluate modelling performance and define probability threshold with `SDMeval`. Further reading and examples are provided within the functions, don't hesitate to explore them.
+
+
+
+## References
+Araujo, M. B., & Guisan, A. (2006). Five (or so) challenges for species distribution modelling. Journal of biogeography, 33(10), 1677-1688.
+
+Barbet‐Massin, M., Jiguet, F., Albert, C. H., & Thuiller, W. (2012). Selecting pseudo‐absences for species distribution models: how, where and how many? Methods in Ecology and Evolution, 3(2), 327-338.
+
+David, B., Choné, T., Mooi, R. & de Ridder C. (2005). Antarctic echinoidea (Vol. 10). ARG Gantner.
+
+Elith, J.,P Anderson, R., Dudík, M., Ferrier, S., Guisan, A., J Hijmans, R., Huettmann, F., ... & A Loiselle, B. (2006). Novel methods improve prediction of species’ distributions from occurrence data. Ecography, 29(2), 129-151.
+
+Elith, J., Leathwick, J. R., & Hastie, T. (2008). A working guide to boosted regression trees. Journal of Animal Ecology, 77(4), 802-813.
+
+Elith, J., & Leathwick, J. R. (2009). Species distribution models: ecological explanation and prediction across space and time. Annual review of ecology, evolution, and systematics, 40, 677-697.
+
+Elith, J., Phillips, S. J., Hastie, T., Dudík, M., Chee, Y. E., & Yates, C. J. (2011). A statistical explanation of MaxEnt for ecologists. Diversity and distributions, 17(1), 43-57.
+
+Guillaumot, C., Martin, A., Fabri-Ruiz, S., Eléaume, M., & Saucède, T. (2016). Echinoids of the Kerguelen Plateau–occurrence data and environmental setting for past, present, and future species distribution modelling. ZooKeys, (630), 1.
+
+Pearce, J. L., & Boyce, M. S. (2006). Modelling distribution and abundance with presence‐only data. Journal of applied ecology, 43(3), 405-412.
+
+Pearson, R. G. (2007). Species’ distribution modeling for conservation educators and practitioners. Synthesis. American Museum of Natural History, 50.
+
+Phillips, S. J., Dudík, M., Elith, J., Graham, C. H., Lehmann, A., Leathwick, J., & Ferrier, S. (2009). Sample selection bias and presence‐only distribution models: implications for background and pseudo‐absence data. Ecological applications, 19(1), 181-197.
+
+Proosdij, A. S., Sosef, M. S., Wieringa, J. J., & Raes, N. (2016). Minimum required number of specimen records to develop accurate species distribution models. Ecography, 39(6), 542-552.
+
+Raes, N., & ter Steege, H. (2007). A null‐model for significance testing of presence‐only species distribution models. Ecography, 30(5), 727-736.
+
+Robinson, L. M., Elith, J., Hobday, A. J., Pearson, R. G., Kendall, B. E., Possingham, H. P., & Richardson, A. J. (2011). Pushing the limits in marine species distribution modelling: lessons from the land present challenges and opportunities. Global Ecology and Biogeography, 20(6), 789-802.

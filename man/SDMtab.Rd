@@ -47,4 +47,3 @@ Barbet Massin M, F Jiguet, C Albert & W Thuiller (2012) Selecting pseudo absence
 \seealso{
 \link{delim.area} to refine the environmental RasterStack before using this function
 }
-
