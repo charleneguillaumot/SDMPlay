@@ -1,0 +1,20 @@
+---
+title: "List_vignettes"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{List_vignettes}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r}
+"Vignettes used as tutorials for this SDMPlay R package are available at: 
+https://github.com/charleneguillaumot/THESIS/tree/master/SDMPLAY_R_PACKAGE."
+```
