@@ -7,3 +7,5 @@ SDMPlay is a pedagogic package that will allow you to compute SDMs, to understan
 SDMPlay proposes codes to apply a popular machine learning approach, BRT (Boosted Regression Trees) and introduces MaxEnt (Maximum Entropy). 
 
 It contains occurrences of marine species and environmental descriptors datasets as examples associated to several vignette tutorials available at <https://github.com/charleneguillaumot/THESIS/tree/master/SDMPLAY_R_PACKAGE>.
+
+Please also see my PhD thesis at https://hal.science/tel-03299384/.
