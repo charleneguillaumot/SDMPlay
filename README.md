@@ -1,12 +1,9 @@
 # SDMPlay
-SDMPlay is a package developed to provide simple functions to build species distribution models and ready to use sets of marine biological and environmental data. The functions allow to compute models with two popular machine learning approaches, BRT (Boosted Regression Trees) and MaxEnt (Maximum Entropy). They include the possibility of managing the main parameters for the construction of the models. 
-Classic tools to evaluate model performance are provided (Area Under the Curve, omission rate and confusion matrix, map standard deviation) and are completed with tools to perform null models. 
+Species distribution modelling (SDM) has been developed for several years to address conservation issues, assess the direct impact of human activities on ecosystems and predict the potential distribution shifts of invasive species (see Elith et al. 2006, Pearson 2007, Elith and Leathwick 2009). 
+SDM relates species occurrences with environmental information and can predict species distribution on their entire occupied space. This approach has been increasingly applied to Southern Ocean case studies, but requires corrections in such a context, due to the broad scale area, the limited number of presence records available and the spatial and temporal aggregations of these datasets. 
 
-The biological dataset includes original occurrences of two species of the class Echinoidea (sea urchins) present on the Kerguelen Plateau and that show contrasted ecological niches. The dataset has been recently updated in Guillaumot et al. (submitted). The environmental dataset includes the corresponding statistics for 15 abiotic and biotic descriptors summarized for the Kerguelen Plateau and for different periods in a raster format. Sources are listed in Guillaumot et al. 2016. 
+SDMPlay is a pedagogic package that will allow you to compute SDMs, to understand the overall method, and to produce model outputs. The package, along with its associated vignettes, highlights the different steps of model calibration and describes how to choose the best methods to generate accurate and relevant outputs. 
 
-The package can be used for practicals to teach and learn the basics of species distribution modelling. Maps of potential distribution can be produced based on the example data included in the package, which brings prior observations of the influence of spatial and temporal heterogeneities on modelling performances. The user can also provide his own datasets to use the modelling functions. 
+SDMPlay proposes codes to apply a popular machine learning approach, BRT (Boosted Regression Trees) and introduces MaxEnt (Maximum Entropy). 
 
-References=
-Guillaumot, C., Martin, A., Fabri-Ruiz, S., Eléaume, M., & Saucède, T. (2016). Echinoids of the Kerguelen Plateau–occurrence data and environmental setting for past, present, and future species distribution modelling. ZooKeys, (630), 1.
-
-Guillaumot, C., Martin , A., Fabri-Ruiz, S., Eleaume, M. and Saucede, T. (2016) Environmental parameters (1955-2012) for echinoids distribution modelling on the Kerguelen Plateau. Australian Antarctic Data Centre - doi:10.4225/15/578ED5A08050F
+It contains occurrences of marine species and environmental descriptors datasets as examples associated to several vignette tutorials available at <https://github.com/charleneguillaumot/THESIS/tree/master/SDMPLAY_R_PACKAGE>.
